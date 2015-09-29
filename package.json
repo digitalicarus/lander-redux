@@ -1,0 +1,17 @@
+{
+  "name": "lander-redux",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./build.js > bundle.js",
+    "start": "python -m SimpleHTTPServer"
+  },
+  "author": "",
+  "devDependencies": {
+    "browserify": "~11.2.0",
+    "minimist": "~1.2.0",
+    "watch": "~0.16.0"
+  }
+}
