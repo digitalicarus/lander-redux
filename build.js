@@ -5,18 +5,28 @@ var path       = require('path')
 ,   browserify = require('browserify')
 ,   bundle     = browserify({debug: true, bare: true})
 ,   params     = require('minimist')(process.argv)
-,   outfile    = params.o || path.join(__dirname, 'bundle.js')
+,   outfile    = typeof params.o === 'string' || path.join(__dirname, 'bundle.js')
 ,   watchDir   = typeof params.watch === 'string' ? params.watch : __dirname
 ;
 
-function doTheBuild (outfile) {
-	bundle.add(path.join(__dirname, 'main.js'));
+bundle.add(path.join(__dirname, 'main.js'));
 
-	outfile && console.log(outfile, 'written');
-	bundle.bundle().pipe(outfile ?
-		fs.createWriteStream(outfile) :
-		process.stdout
-	);
+function doTheBuild (outfile) {
+
+	var writable = outfile ? fs.createWriteStream(outfile) : process.stdout;
+	function end () { outfile && writable.end(); }
+
+	res = bundle.bundle()
+		.on('error', function (err) {
+			console.log(err.toString());
+			end();
+		})
+		.on('end', function () {
+			outfile && console.log(outfile, 'written');
+			end();
+		})
+		.pipe(writable)
+		;
 }
 
 if ('watch' in params) {
@@ -44,8 +54,5 @@ if ('watch' in params) {
 		});
 	});
 } else {
-	doTheBuild();
+	doTheBuild(outfile);
 }
-
-
-
